@@ -1,4 +1,22 @@
-STANDARD INSTALLATION
+With RPM-based systems
+----------------------
+
+	rpm -ts PACKAGE.tar.gz
+
+would build perl-PACKAGE.src.rpm
+
+	rpm -tb PACKAGE.tar.gz
+
+would build perl-PACKAGE.ARCH.rpm
+
+	rpm -ta PACKAGE.tar.gz
+
+would build both of them.
+
+
+
+Standard installation
+---------------------
 
 On most systems, just do this from the command line:
 
@@ -14,12 +32,13 @@ To be sure on most Unix systems you can:
 
 
 
-NON-STANDARD INSTALLATION
+Non-standard installation
+-------------------------
 
 To install to a non-standard place (e.g., under your own home directory),
 or try this:
 
-	perl Makefile.PL PREFIX=~ LIB=~/lib/site_perl
+	perl Makefile.PL PREFIX=$HOME LIB=$HOME/lib/site_perl
 	make test
 	make install
 
@@ -27,7 +46,7 @@ See how to install perl modules by running 'perldoc perlmodinstall'.
 
 If you have problem with this above, try my own fix:
 
-	perl Makefile.PL prefix=~
+	perl Makefile.PL prefix=$HOME
 	make test
 	make install
 

@@ -6,4 +6,4 @@ t/0.t
 README
 INSTALL
 ModeString.pm
-
+perl-File-Stat-ModeString.spec

@@ -44,7 +44,7 @@ BEGIN
 	@type_to_char %char_to_typemode %ugorw_to_mode %ugox_to_mode
 	@perms_clnid @perms_setid @perms_stick);
 
-    $VERSION = do { my @r = (q$Revision: 0.19 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.21 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -255,7 +255,7 @@ Dmitry Fedorov <fedorov@inp.nsk.su>
 
 Copyright (c) 2003, Dmitry Fedorov <fedorov@inp.nsk.su>
 
-=head1 LICENCE
+=head1 LICENSE
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
