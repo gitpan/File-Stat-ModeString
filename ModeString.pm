@@ -32,6 +32,7 @@ from B<File::Stat::Bits>.
 
 =cut
 
+require 5.005;
 use strict;
 use Carp;
 use File::Stat::Bits;
@@ -44,7 +45,7 @@ BEGIN
 	@type_to_char %char_to_typemode %ugorw_to_mode %ugox_to_mode
 	@perms_clnid @perms_setid @perms_stick);
 
-    $VERSION = do { my @r = (q$Revision: 0.22 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.24 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -253,7 +254,7 @@ Dmitry Fedorov <fedorov@inp.nsk.su>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2003, Dmitry Fedorov <fedorov@inp.nsk.su>
+Copyright (C) 2003 Dmitry Fedorov <fedorov@inp.nsk.su>
 
 =head1 LICENSE
 

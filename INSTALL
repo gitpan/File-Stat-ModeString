@@ -1,17 +1,17 @@
 With RPM-based systems
 ----------------------
 
-	rpm -ts PACKAGE.tar.gz
+	rpm[build] -ts PACKAGE.tar.gz
 
-would build perl-PACKAGE.src.rpm
+builds perl-PACKAGE.src.rpm
 
-	rpm -tb PACKAGE.tar.gz
+	rpm[build] -tb PACKAGE.tar.gz
 
-would build perl-PACKAGE.ARCH.rpm
+builds perl-PACKAGE.ARCH.rpm
 
-	rpm -ta PACKAGE.tar.gz
+	rpm[build] -ta PACKAGE.tar.gz
 
-would build both of them.
+builds both of them.
 
 
 

@@ -1,5 +1,6 @@
 #!perl -w
 
+require 5.005;
 use strict;
 use Test;
 

@@ -103,6 +103,7 @@ with help of overridable libscan() method.
 
 =cut
 
+require 5.004;
 use strict;
 use Carp;
 
@@ -111,7 +112,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT $prefix $lib $archname $postamble);
 
-    $VERSION = do { my @r = (q$Revision: 1.8 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 1.10 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -316,7 +317,7 @@ Dmitry Fedorov <fedorov@inp.nsk.su>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2003, Dmitry Fedorov <fedorov@inp.nsk.su>
+Copyright (C) 2003 Dmitry Fedorov <fedorov@inp.nsk.su>
 
 =head1 LICENSE
 
