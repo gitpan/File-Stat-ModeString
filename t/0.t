@@ -34,11 +34,11 @@ foreach my $t (qw(- l p s d c b)) {
 
 	     my $tchr = mode_to_typechar($mode);
 	     ok( $tchr =~ m/^[-dcbpls]$/ )
-		 or die "\ntchr = $tchr; mode_to_typechar(". oct($mode) .") failed on mode \'$m\',";
+		 or die "\ntchr = $tchr; mode_to_typechar(". sprintf("%06o", $mode) .") failed on mode \'$m\',";
 
 	     my $mstr = mode_to_string($mode);
 	     ok( $mstr, $m )
-		 or die "\nmode_to_string(". oct($mode) .") failed on mode \'$m\',";
+		 or die "\nmode_to_string(". sprintf("%06o", $mode) .") failed on mode \'$m\',";
 	 }
 	}
        }
