@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass ModeString
-%define     version 0.21
+%define     version 0.22
 %define     release 1
 
 # Derived values
@@ -27,6 +27,9 @@ Requires: 	perl >= 5.3.0, perl-File-Stat-Bits >= 0.09
 BuildRoot: 	%{_tmppath}/%{name}-buildroot/
 BuildRequires:	perl >= 5.3.0
 
+# '(not relocateable)' if absent
+Prefix:		/usr
+
 
 %description
 This module provides a few functions for conversion between
@@ -43,8 +46,8 @@ from File::Stat::Bits.
 
 
 %build
-%{__perl} Makefile.PL
-make #OPTIMIZE="$RPM_OPT_FLAGS"
+%{__perl} Makefile.PL INSTALLDIRS=perl
+make
 
 
 %install
@@ -74,7 +77,3 @@ rm -rf $RPM_BUILD_DIR/%{real_name}-%{version}
 #%doc CHANGES
 %{_prefix}
 
-
-%changelog
-* Thu Apr 24 2003 Dmitry Fedorov <fedorov@cpan.org>
-- Generic perl module spec file based on the one from Michael McLagan <michael.mclagan@linux.org>

@@ -5,4 +5,4 @@ CVS/(Entries|Repository|Root)$
 ^blib/
 ^pm_to_blib$
 ^\.symlinks$
-
+^\.cvsignore$

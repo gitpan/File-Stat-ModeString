@@ -111,7 +111,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT $prefix $lib $archname $postamble);
 
-    $VERSION = do { my @r = (q$Revision: 1.7 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 1.8 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -178,6 +178,19 @@ INSTALLSITEMAN3DIR = $(INSTALLMAN3DIR)
     }
 
     $inherited . $myconsts;
+}
+
+
+sub dist
+{
+    my $dist = shift->SUPER::dist(@_);
+
+    return $dist . <<'EOF';
+
+# remove distfiles before creating new one
+PREOP=$(RM_F) $(DISTVNAME).tar* $(DISTVNAME).zip $(DISTVNAME).shar
+
+EOF
 }
 
 
