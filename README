@@ -42,7 +42,6 @@ FUNCTIONS
     $mode = string_to_mode( $string )
 
     Converts string representation of file mode to binary one.
-    Prints warning and returns *undef* on unknown character.
 
 SEE ALSO
     the stat(2) manpage;

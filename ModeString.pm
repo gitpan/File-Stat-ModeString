@@ -37,15 +37,77 @@ use File::Stat::Bits;
 BEGIN
 {
     use Exporter;
-    use vars qw($VERSION @ISA @EXPORT);
+    use vars qw($VERSION @ISA @EXPORT
+	@type_to_char %char_to_typemode %ugorw_to_mode %ugox_to_mode
+	@perms_clnid @perms_setid @perms_stick);
 
-    $VERSION = do { my @r = (q$Revision: 0.15 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.16 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
     @EXPORT = qw( &is_mode_string_valid
 		  &mode_to_typechar &mode_to_string &string_to_mode
 		);
+
+    @type_to_char = ();
+    $type_to_char[S_IFDIR  >> 9] = 'd';
+    $type_to_char[S_IFCHR  >> 9] = 'c';
+    $type_to_char[S_IFBLK  >> 9] = 'b';
+    $type_to_char[S_IFREG  >> 9] = '-';
+    $type_to_char[S_IFIFO  >> 9] = 'p';
+    $type_to_char[S_IFLNK  >> 9] = 'l';
+    $type_to_char[S_IFSOCK >> 9] = 's';
+
+    @perms_clnid = qw(--- --x -w- -wx r-- r-x rw- rwx);
+    @perms_setid = qw(--S --s -wS -ws r-S r-s rwS rws);
+    @perms_stick = qw(--T --t -wT -wt r-T r-t rwT rwt);
+
+    %char_to_typemode =
+	(
+	 'd' => S_IFDIR ,
+	 'c' => S_IFCHR ,
+	 'b' => S_IFBLK ,
+	 '-' => S_IFREG ,
+	 'p' => S_IFIFO ,
+	 'l' => S_IFLNK ,
+	 's' => S_IFSOCK
+	);
+
+    %ugorw_to_mode =
+	(
+	 'u--' => 0,
+	 'ur-' => S_IRUSR,
+	 'u-w' => S_IWUSR,
+	 'urw' => S_IRUSR|S_IWUSR,
+
+	 'g--' => 0,
+	 'gr-' => S_IRGRP,
+	 'g-w' => S_IWGRP,
+	 'grw' => S_IRGRP|S_IWGRP,
+
+	 'o--' => 0,
+	 'or-' => S_IROTH,
+	 'o-w' => S_IWOTH,
+	 'orw' => S_IROTH|S_IWOTH
+	);
+
+    %ugox_to_mode =
+	(
+	 'u-' => 0,
+	 'ux' => S_IXUSR,
+	 'us' => S_IXUSR|S_ISUID,
+	 'uS' =>         S_ISUID,
+
+	 'g-' => 0,
+	 'gx' => S_IXGRP,
+	 'gs' => S_IXGRP|S_ISGID,
+	 'gS' =>         S_ISGID,
+
+	 'o-' => 0,
+	 'ox' => S_IXOTH,
+	 'ot' => S_IXOTH|S_ISVTX,
+	 'oT' =>         S_ISVTX,
+	);
 }
 
 
@@ -60,7 +122,7 @@ sub is_mode_string_valid
 {
     my $string = shift;
 
-    return $string =~ m/^[dcb\-pls]([r-][w-][xsS-]){2}?[r-][w-][xtT-]$/;
+    return $string =~ m/^[-dcbpls]([r-][w-][xsS-]){2}?[r-][w-][xtT-]$/;
 }
 
 
@@ -74,30 +136,8 @@ Returns file type character of binary mode, '?' on unknown file type.
 sub mode_to_typechar
 {
     my $mode = shift;
-
-    return 'd' if S_ISDIR ($mode);
-    return 'c' if S_ISCHR ($mode);
-    return 'b' if S_ISBLK ($mode);
-    return '-' if S_ISREG ($mode);
-    return 'p' if S_ISFIFO($mode);
-    return 'l' if S_ISLNK ($mode);
-    return 's' if S_ISSOCK($mode);
-    return '?';
-}
-
-
-sub have_bit
-{
-    my ($mode, $mask) = @_;
-
-    return ($mode & $mask) == $mask;
-}
-
-sub have_bit_char
-{
-    my ($mode, $mask, $char) = @_;
-
-    return (($mode & $mask) == $mask) ? $char : '-';
+    my $type = $type_to_char[ ($mode & S_IFMT) >> 9 ];
+    return defined $type ? $type : '?';
 }
 
 
@@ -113,47 +153,21 @@ sub mode_to_string
 {
     my $mode = shift;
     my $string;
+    my $perms;
 
     $string = mode_to_typechar($mode);
 
-    {	# user
-	$string .= have_bit_char($mode, S_IRUSR(), 'r');
-	$string .= have_bit_char($mode, S_IWUSR(), 'w');
+    # user
+    $perms = ( $mode & S_ISUID ) ? \@perms_setid : \@perms_clnid;
+    $string .= $perms->[($mode & S_IRWXU) >> 6];
 
-	my $x = 1 if have_bit($mode, S_IXUSR());
-	my $s = 1 if have_bit($mode, S_ISUID());
+    # group
+    $perms = ( $mode & S_ISGID ) ? \@perms_setid : \@perms_clnid;
+    $string .= $perms->[($mode & S_IRWXG) >> 3];
 
-	$string .= 'x', last if  $x and !$s;
-	$string .= 's', last if  $x and  $s;
-	$string .= 'S', last if !$x and  $s;
-	$string .= '-';
-    }
-
-    {	# group
-	$string .= have_bit_char($mode, S_IRGRP(), 'r');
-	$string .= have_bit_char($mode, S_IWGRP(), 'w');
-
-	my $x = 1 if have_bit($mode, S_IXGRP());
-	my $s = 1 if have_bit($mode, S_ISGID());
-
-	$string .= 'x', last if  $x and !$s;
-	$string .= 's', last if  $x and  $s;
-	$string .= 'S', last if !$x and  $s;
-	$string .= '-';
-    }
-
-    {	# other
-	$string .= have_bit_char($mode, S_IROTH(), 'r');
-	$string .= have_bit_char($mode, S_IWOTH(), 'w');
-
-	my $x = 1 if have_bit($mode, S_IXOTH());
-	my $t = 1 if have_bit($mode, S_ISVTX());
-
-	$string .= 'x', last if  $x and !$t;
-	$string .= 't', last if  $x and  $t;
-	$string .= 'T', last if !$x and  $t;
-	$string .= '-';
-    }
+    # other
+    $perms = ( $mode & S_ISVTX ) ? \@perms_stick : \@perms_clnid;
+    $string .= $perms->[($mode & S_IRWXO)];
 
     return $string;
 }
@@ -164,7 +178,6 @@ sub mode_to_string
 $mode = string_to_mode( $string )
 
 Converts string representation of file mode to binary one.
-Prints warning and returns I<undef> on unknown character.
 
 =cut
 sub string_to_mode
@@ -172,109 +185,36 @@ sub string_to_mode
     my $string = shift;
     my @list   = split //, $string;
     my $mode   = 0;
+    my $char;
 
-    {	# type
-	my $char = shift @list;
-	$mode |= S_IFDIR (), last if 'd' eq $char;
-	$mode |= S_IFCHR (), last if 'c' eq $char;
-	$mode |= S_IFBLK (), last if 'b' eq $char;
-	$mode |= S_IFREG (), last if '-' eq $char;
-	$mode |= S_IFIFO (), last if 'p' eq $char;
-	$mode |= S_IFLNK (), last if 'l' eq $char;
-	$mode |= S_IFSOCK(), last if 's' eq $char;
+    # type
+    $char  = shift @list;
+    $mode |= $char_to_typemode{$char};
 
-	carp "Invalid character in file type position of mode $string";
-	return undef;
-    }
+    # user read | write
+    $char  = 'u' . shift(@list) . shift(@list);
+    $mode |= $ugorw_to_mode{$char};
 
-    {	# user read
-	my $char = shift @list;
-	$mode |= S_IRUSR, last if 'r' eq $char;
-			  last if '-' eq $char;
+    # user execute
+    $char  = 'u' . shift @list;
+    $mode |= $ugox_to_mode{$char};
 
-	carp "Invalid character in user read position of mode $string";
-	return undef;
-    }
+    # group read | write
+    $char  = 'g' . shift(@list) . shift(@list);
+    $mode |= $ugorw_to_mode{$char};
 
-    {	# user write
-	my $char = shift @list;
-	$mode |= S_IWUSR, last if 'w' eq $char;
-			  last if '-' eq $char;
+    # group execute
+    $char  = 'g' . shift @list;
+    $mode |= $ugox_to_mode{$char};
 
-	carp "Invalid character in user write position of mode $string";
-	return undef;
-    }
+    # others read | write
+    $char  = 'o' . shift(@list) . shift(@list);
+    $mode |= $ugorw_to_mode{$char};
 
-    {	# user execute
-	my $char = shift @list;
-	$mode |= S_IXUSR        , last if 'x' eq $char;
-	$mode |= S_IXUSR|S_ISUID, last if 's' eq $char;
-	$mode |=         S_ISUID, last if 'S' eq $char;
-				  last if '-' eq $char;
+    # others execute
+    $char  = 'o' . shift @list;
+    $mode |= $ugox_to_mode{$char};
 
-	carp "Invalid character in user execute position of mode $string";
-	return undef;
-    }
-
-
-    {	# group read
-	my $char = shift @list;
-	$mode |= S_IRGRP, last if 'r' eq $char;
-			  last if '-' eq $char;
-
-	carp "Invalid character in group read position of mode $string";
-	return undef;
-    }
-
-    {	# group write
-	my $char = shift @list;
-	$mode |= S_IWGRP, last if 'w' eq $char;
-			  last if '-' eq $char;
-
-	carp "Invalid character in group write position of mode $string";
-	return undef;
-    }
-
-    {	# group execute
-	my $char = shift @list;
-	$mode |= S_IXGRP        , last if 'x' eq $char;
-	$mode |= S_IXGRP|S_ISGID, last if 's' eq $char;
-	$mode |=         S_ISGID, last if 'S' eq $char;
-				  last if '-' eq $char;
-
-	carp "Invalid character in group execute position of mode $string";
-	return undef;
-    }
-
-
-    {	# others read
-	my $char = shift @list;
-	$mode |= S_IROTH, last if 'r' eq $char;
-			  last if '-' eq $char;
-
-	carp "Invalid character in others read position of mode $string";
-	return undef;
-    }
-
-    {	# others write
-	my $char = shift @list;
-	$mode |= S_IWOTH, last if 'w' eq $char;
-			  last if '-' eq $char;
-
-	carp "Invalid character in others write position of mode $string";
-	return undef;
-    }
-
-    {	# others execute
-	my $char = shift @list;
-	$mode |= S_IXOTH        , last if 'x' eq $char;
-	$mode |= S_IXOTH|S_ISVTX, last if 't' eq $char;
-	$mode |=         S_ISVTX, last if 'T' eq $char;
-				  last if '-' eq $char;
-
-	carp "Invalid character in others execute position of mode $string";
-	return undef;
-    }
 
     return $mode;
 }

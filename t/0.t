@@ -3,8 +3,8 @@
 use strict;
 use Test;
 
-my $n              =  1+28672*5;
-BEGIN { plan tests => 1+28672*5 };
+my $n              =  1+28672*4;
+BEGIN { plan tests => 1+28672*4};
 
 use File::Stat::ModeString;
 ok(1);#1
@@ -33,10 +33,8 @@ foreach my $t (qw(- l p s d c b)) {
 		 or die "\nstring_to_mode($m) failed,";
 
 	     my $tchr = mode_to_typechar($mode);
-	     ok( $tchr ne '?')
-		 or die "\nmode_to_typechar(". oct($mode) .") failed on mode \'$m\',";
 	     ok( $tchr =~ m/^[-dcbpls]$/ )
-		 or die "\nmode_to_typechar(". oct($mode) .") failed on mode \'$m\',";
+		 or die "\ntchr = $tchr; mode_to_typechar(". oct($mode) .") failed on mode \'$m\',";
 
 	     my $mstr = mode_to_string($mode);
 	     ok( $mstr, $m )
