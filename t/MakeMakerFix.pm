@@ -34,7 +34,7 @@ B<or:>
 		     );
 
 
- perl Makefile.PL prefix=~
+ perl Makefile.PL prefix=$HOME
 
  export PERL5LIB=$HOME/lib/site_perl
  export MANPATH=$HOME/man:$MANPATH
@@ -112,7 +112,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT $prefix $lib $archname $postamble);
 
-    $VERSION = do { my @r = (q$Revision: 1.10 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 1.12 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -186,22 +186,22 @@ sub dist
 {
     my $dist = shift->SUPER::dist(@_);
 
-    return $dist . <<'EOF';
+    return $dist . '
 
 # remove distfiles before creating new one
 PREOP=$(RM_F) $(DISTVNAME).tar* $(DISTVNAME).zip $(DISTVNAME).shar
 
-EOF
+'
 }
 
 
 sub postamble
 {
-return <<'EOF' . $MakeMakerFix::postamble;
+return '
 
 # --- MakeMakerFix forces uninstall target:
 
-UNINSTALL = $(PERL) -MExtUtils::Install -e 'uninstall($$ARGV[0],1,0);'
+UNINSTALL = $(PERL) -MExtUtils::Install -e \'uninstall($$ARGV[0],1,0);\'
 
 # Remove all empty directories.
 # Sort so they are removable in bottom-up order.
@@ -209,7 +209,7 @@ uninstall_from_sitedirs ::
 	find $(INSTALLSITELIB) -type d ! -name . ! -name .. | \
 	sort -r | xargs rmdir 2>/dev/null || true
 
-EOF
+' . $MakeMakerFix::postamble;
 }
 
 
@@ -253,7 +253,7 @@ sub from
 {
     my $filename = shift;
     local *FH;
-    open(FH, $filename) or croak "Could not open '$filename': $!";
+    open  (FH, $filename) or croak "Could not open '$filename': $!";
     local $/ = undef;
     my $file = <FH>;	# file contents
     close FH;
@@ -277,15 +277,18 @@ sub WriteMakefile
     my $fname = shift;
     my ($name, $abstract, $author) = from($fname);
 
+    my %args = @_;
+
     # my postamble attribute
-    foreach (my $i=0; $i < @_; $i+=1)
+    if ( exists $args{'postamble'} )
     {
-	if ( $_[$i] eq 'postamble' )
-	{
-	    $postamble = $_[$i+1];
-	    splice(@_, $i, 2);
-	    last;
-	}
+	$postamble = $args{'postamble'};
+	delete $args{'postamble'};
+    }
+
+    if ( exists $args{'clean'} )
+    {
+	$args{'clean'}->{'FILES'} .= ' README *.tar *.tar.gz';
     }
 
     # generate README _before_ MakeMaker run:
@@ -298,8 +301,7 @@ sub WriteMakefile
 	'VERSION_FROM'	=> $fname,
 	'ABSTRACT'	=> $abstract,
 	'AUTHOR'	=> $author,
-	'clean'		=> {'FILES' => 'README *.tar *.tar.gz'},
-	@_
+	%args
     );
 }
 
