@@ -1,0 +1,9 @@
+MANIFEST
+MANIFEST.SKIP
+Makefile.PL
+t/MakeMakerFix.pm
+t/0.t
+README
+INSTALL
+ModeString.pm
+
