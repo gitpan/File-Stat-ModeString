@@ -13,8 +13,7 @@ File::Stat::ModeString - conversion file stat(2) mode to/from string representat
  $type    = mode_to_typechar( $st_mode );
 
  $record = <IN>; chomp $record;
- $record_re = MODE_STRING_RE;
- $record =~ m/^some_prefix\s+$record_re\s+some_suffix$/o
+ $record =~ m/^some_prefix\s+$MODE_STRING_RE\s+some_suffix$/o
 	or die "invalid record format";
 
  die "Invalid mode in $string"
@@ -41,15 +40,15 @@ use File::Stat::Bits;
 BEGIN
 {
     use Exporter;
-    use vars qw($VERSION @ISA @EXPORT
+    use vars qw($VERSION @ISA @EXPORT $MODE_STRING_RE
 	@type_to_char %char_to_typemode %ugorw_to_mode %ugox_to_mode
 	@perms_clnid @perms_setid @perms_stick);
 
-    $VERSION = do { my @r = (q$Revision: 0.17 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.18 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
-    @EXPORT = qw( &is_mode_string_valid MODE_STRING_RE
+    @EXPORT = qw( &is_mode_string_valid $MODE_STRING_RE
 		  &mode_to_typechar &mode_to_string &string_to_mode
 		);
 
@@ -117,14 +116,15 @@ BEGIN
 
 =head1 CONSTANTS
 
-=head2 MODE_STRING_RE
+=head2 $MODE_STRING_RE
 
 Regular expression to match mode string (without ^$).
 
 =cut
 
-use constant MODE_STRING_RE => scalar
-	'[-dcbpls]([r-][w-][xsS-]){2}?[r-][w-][xtT-]';
+BEGIN {
+    $MODE_STRING_RE = '[-dcbpls]([r-][w-][xsS-]){2}?[r-][w-][xtT-]';
+}
 
 
 
@@ -141,8 +141,7 @@ sub is_mode_string_valid
 {
     my $string = shift;
 
-    my $re = MODE_STRING_RE;
-    return $string =~ m/^$re$/o;
+    return $string =~ m/^$MODE_STRING_RE$/o;
 }
 
 

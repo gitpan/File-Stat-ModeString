@@ -10,8 +10,7 @@ SYNOPSIS
      $type    = mode_to_typechar( $st_mode );
 
      $record = <IN>; chomp $record;
-     $record_re = MODE_STRING_RE;
-     $record =~ m/^some_prefix\s+$record_re\s+some_suffix$/o
+     $record =~ m/^some_prefix\s+$MODE_STRING_RE\s+some_suffix$/o
             or die "invalid record format";
 
      die "Invalid mode in $string"
@@ -26,7 +25,7 @@ DESCRIPTION
     File::Stat::Bits.
 
 CONSTANTS
-  MODE_STRING_RE
+  $MODE_STRING_RE
 
     Regular expression to match mode string (without ^$).
 
