@@ -7,3 +7,4 @@ README
 INSTALL
 ModeString.pm
 perl-File-Stat-ModeString.spec
+META.yml                                 Module meta-data (added by MakeMaker)

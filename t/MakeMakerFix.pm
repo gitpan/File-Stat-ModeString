@@ -112,7 +112,7 @@ BEGIN
     use Exporter;
     use vars qw($VERSION @ISA @EXPORT $prefix $lib $archname $postamble);
 
-    $VERSION = do { my @r = (q$Revision: 1.12 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 1.13 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -315,11 +315,11 @@ L<ExtUtils::MM_Unix>;
 
 =head1 AUTHOR
 
-Dmitry Fedorov <fedorov@inp.nsk.su>
+Dmitry Fedorov <dm.fedorov@gmail.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2003 Dmitry Fedorov <fedorov@inp.nsk.su>
+Copyright (C) 2003 Dmitry Fedorov <dm.fedorov@gmail.com>
 
 =head1 LICENSE
 

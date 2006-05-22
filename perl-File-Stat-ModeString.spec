@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass ModeString
-%define     version 0.27
+%define     version 0.28
 %define     release 1
 
 # Derived values
@@ -46,13 +46,13 @@ from File::Stat::Bits.
 
 
 %build
-%{__perl} Makefile.PL INSTALLDIRS=perl
-make
-
+%{__perl} Makefile.PL INSTALLDIRS="vendor" "PREFIX=%{buildroot}%{_prefix}"
+%{__make} %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%makeinstall PREFIX=$RPM_BUILD_ROOT%{_prefix}
+%makeinstall
+rm -rf %{buildroot}%{perl_archlib} %{buildroot}%{perl_vendorarch}/auto/*/*/.packlist
 
 # Clean up some files we don't want/need
 rm -rf `find $RPM_BUILD_ROOT -name "perllocal.pod"`

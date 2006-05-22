@@ -48,7 +48,7 @@ BEGIN
 	@type_to_char %char_to_typemode %ugorw_to_mode %ugox_to_mode
 	@perms_clnid @perms_setid @perms_stick);
 
-    $VERSION = do { my @r = (q$Revision: 0.27 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
+    $VERSION = do { my @r = (q$Revision: 0.28 $ =~ /\d+/g); sprintf "%d."."%02d" x $#r, @r };
 
     @ISA = ('Exporter');
 
@@ -253,11 +253,11 @@ L<Stat::lsMode(3)>;
 
 =head1 AUTHOR
 
-Dmitry Fedorov <fedorov@inp.nsk.su>
+Dmitry Fedorov <dm.fedorov@gmail.com>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2003 Dmitry Fedorov <fedorov@inp.nsk.su>
+Copyright (C) 2003 Dmitry Fedorov <dm.fedorov@gmail.com>
 
 =head1 LICENSE
 
