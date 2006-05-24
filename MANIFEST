@@ -1,10 +1,11 @@
 MANIFEST
 MANIFEST.SKIP
+VERSION
+README
+INSTALL
 Makefile.PL
 t/MakeMakerFix.pm
 t/0.t
-README
-INSTALL
 ModeString.pm
 perl-File-Stat-ModeString.spec
-META.yml                                 Module meta-data (added by MakeMaker)
+

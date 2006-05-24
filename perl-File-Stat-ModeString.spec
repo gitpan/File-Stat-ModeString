@@ -1,7 +1,7 @@
 %define       class File
 %define    subclass Stat
 %define subsubclass ModeString
-%define     version 0.28
+%define     version 1.00
 %define     release 1
 
 # Derived values
